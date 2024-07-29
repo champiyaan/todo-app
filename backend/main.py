@@ -1,8 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
 import asyncpg
-import json
+import os
+
+load_dotenv()  # Load environment variables from .env file
 
 app = FastAPI()
 
@@ -17,8 +20,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Database connection details
-DATABASE_URL = "postgresql://test:test@localhost/testdb"
+# Database connection details from environment variable
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 class User(BaseModel):
     username: str
@@ -34,7 +37,6 @@ async def shutdown():
 
 @app.post("/login")
 async def login(user: User):
-    print(f"Received login request: {user.json()}")
     query = "SELECT * FROM users WHERE username = $1 AND password = $2"
     async with app.state.pool.acquire() as connection:
         result = await connection.fetchrow(query, user.username, user.password)
