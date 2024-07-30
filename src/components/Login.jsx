@@ -14,6 +14,7 @@ const Login = () => {
         password,
       });
       console.log(response.data);
+      setError(""); // Clear error on successful login
     } catch (err) {
       setError("Invalid credentials");
     }

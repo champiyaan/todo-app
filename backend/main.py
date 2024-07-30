@@ -29,17 +29,30 @@ class User(BaseModel):
 
 @app.on_event("startup")
 async def startup():
-    app.state.pool = await asyncpg.create_pool(DATABASE_URL)
+    try:
+        app.state.pool = await asyncpg.create_pool(DATABASE_URL, max_size=10)  # Adjust max_size as needed
+        print("Database connection pool created successfully")
+    except Exception as e:
+        print(f"Error creating connection pool: {e}")
+        raise HTTPException(status_code=500, detail="Failed to connect to the database")
 
 @app.on_event("shutdown")
 async def shutdown():
-    await app.state.pool.close()
+    try:
+        await app.state.pool.close()
+        print("Database connection pool closed")
+    except Exception as e:
+        print(f"Error closing connection pool: {e}")
 
 @app.post("/login")
 async def login(user: User):
     query = "SELECT * FROM users WHERE username = $1 AND password = $2"
-    async with app.state.pool.acquire() as connection:
-        result = await connection.fetchrow(query, user.username, user.password)
-        if not result:
-            raise HTTPException(status_code=400, detail="Invalid credentials")
-    return {"message": "Login successful"}
+    try:
+        async with app.state.pool.acquire() as connection:
+            result = await connection.fetchrow(query, user.username, user.password)
+            if not result:
+                raise HTTPException(status_code=400, detail="Invalid credentials")
+        return {"message": "Login successful"}
+    except Exception as e:
+        print(f"Error during login: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
