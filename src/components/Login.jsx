@@ -5,9 +5,11 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // State to track loading
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     try {
       const response = await axios.post("http://localhost:8000/login", {
         username,
@@ -17,11 +19,13 @@ const Login = () => {
       setError(""); // Clear error on successful login
     } catch (err) {
       setError("Invalid credentials");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h2>Login</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
@@ -31,6 +35,7 @@ const Login = () => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            disabled={loading} // Disable input while loading
           />
         </div>
         <div>
@@ -39,10 +44,14 @@ const Login = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading} // Disable input while loading
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Loading..." : "Login"}
+        </button>
       </form>
+      {loading && <div className="loader"></div>} {/* Loader component */}
     </div>
   );
 };
