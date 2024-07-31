@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // State to track loading
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,6 +20,7 @@ const Login = () => {
       });
       console.log(response.data);
       setError(""); // Clear error on successful login
+      navigate("/todo"); // Redirect to the Todo app on successful login
     } catch (err) {
       setError("Invalid credentials");
     } finally {
