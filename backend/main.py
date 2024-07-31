@@ -55,11 +55,11 @@ async def shutdown():
 @app.post("/todos")
 async def create_todo(todo: TodoCreate):
     query = """INSERT INTO todos (task, due_date, completed) VALUES ($1, $2, $3) RETURNING id"""
-    due_date = datetime.fromisoformat(todo.due_date) if todo.due_date else datetime.now()
-    values = (todo.task, due_date, todo.completed)
+    
     try:
+        due_date = datetime.now() if not todo.due_date else datetime.fromisoformat(todo.due_date)
         async with app.state.pool.acquire() as connection:
-            result = await connection.fetchrow(query, *values)
+            result = await connection.fetchrow(query, todo.task, due_date, todo.completed)
             return {"id": result["id"], "message": "Todo created successfully"}
     except Exception as e:
         print(f"Error creating todo: {e}")
@@ -83,11 +83,11 @@ async def update_todo(todo_id: int, todo: TodoUpdate):
                       due_date = COALESCE($2, due_date), 
                       completed = COALESCE($3, completed) 
                       WHERE id = $4"""
-    due_date = datetime.fromisoformat(todo.due_date) if todo.due_date else datetime.now()
-    values = (todo.task, due_date, todo.completed, todo_id)
+
     try:
+        due_date = datetime.now() if not todo.due_date else datetime.fromisoformat(todo.due_date)
         async with app.state.pool.acquire() as connection:
-            await connection.execute(update_query, *values)
+            await connection.execute(update_query, todo.task, due_date, todo.completed, todo_id)
             return {"message": "Todo updated successfully"}
     except Exception as e:
         print(f"Error updating todo: {e}")

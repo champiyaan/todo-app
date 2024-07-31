@@ -27,7 +27,7 @@ const TodoApp = () => {
     // Use current time if no due date is provided
     let dueDate = newDueDate ? new Date(newDueDate) : new Date();
 
-    // Format the due date to include both date and time
+    // Format the due date to include both date and time in ISO format
     const formattedDueDate = dueDate.toISOString();
 
     try {
@@ -77,7 +77,7 @@ const TodoApp = () => {
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "";
     const d = new Date(dateTime);
-    return d.toLocaleString();
+    return d.toLocaleString(); // This converts the ISO string to a local date-time string
   };
 
   return (
