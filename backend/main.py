@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
 from dotenv import load_dotenv
 import asyncpg
 import os
@@ -25,15 +24,19 @@ app.add_middleware(
 # Database connection details from environment variable
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+class User(BaseModel):
+    username: str
+    password: str
+
 class TodoCreate(BaseModel):
     task: str
-    due_date: Optional[str] = None
+    due_date: str
     completed: bool
 
 class TodoUpdate(BaseModel):
-    task: Optional[str] = None
-    due_date: Optional[str] = None
-    completed: Optional[bool] = None
+    task: str
+    due_date: str
+    completed: bool
 
 @app.on_event("startup")
 async def startup():
@@ -52,54 +55,69 @@ async def shutdown():
     except Exception as e:
         print(f"Error closing connection pool: {e}")
 
+@app.post("/login")
+async def login(user: User):
+    query = "SELECT * FROM users WHERE username = $1 AND password = $2"
+    try:
+        async with app.state.pool.acquire() as connection:
+            result = await connection.fetchrow(query, user.username, user.password)
+            if not result:
+                raise HTTPException(status_code=400, detail="Invalid credentials")
+        return {"message": "Login successful"}
+    except Exception as e:
+        print(f"Error during login: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 @app.post("/todos")
 async def create_todo(todo: TodoCreate):
-    query = """INSERT INTO todos (task, due_date, completed) VALUES ($1, $2, $3) RETURNING id"""
-    
+    query = """
+    INSERT INTO todos (task, due_date, completed) 
+    VALUES ($1, $2, $3) 
+    RETURNING id
+    """
     try:
-        due_date = datetime.now() if not todo.due_date else datetime.fromisoformat(todo.due_date)
         async with app.state.pool.acquire() as connection:
-            result = await connection.fetchrow(query, todo.task, due_date, todo.completed)
-            return {"id": result["id"], "message": "Todo created successfully"}
+            due_date = datetime.fromisoformat(todo.due_date) if todo.due_date else datetime.now()
+            result = await connection.fetchval(query, todo.task, due_date, todo.completed)
+        return {"id": result}
     except Exception as e:
         print(f"Error creating todo: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/todos")
 async def get_todos():
-    query = """SELECT * FROM todos"""
+    query = "SELECT * FROM todos"
     try:
         async with app.state.pool.acquire() as connection:
-            result = await connection.fetch(query)
-            return result
+            todos = await connection.fetch(query)
+        return todos
     except Exception as e:
         print(f"Error fetching todos: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.put("/todos/{todo_id}")
 async def update_todo(todo_id: int, todo: TodoUpdate):
-    update_query = """UPDATE todos SET 
-                      task = COALESCE($1, task), 
-                      due_date = COALESCE($2, due_date), 
-                      completed = COALESCE($3, completed) 
-                      WHERE id = $4"""
-
+    query = """
+    UPDATE todos 
+    SET task = $1, due_date = $2, completed = $3 
+    WHERE id = $4
+    """
     try:
-        due_date = datetime.now() if not todo.due_date else datetime.fromisoformat(todo.due_date)
         async with app.state.pool.acquire() as connection:
-            await connection.execute(update_query, todo.task, due_date, todo.completed, todo_id)
-            return {"message": "Todo updated successfully"}
+            due_date = datetime.fromisoformat(todo.due_date) if todo.due_date else datetime.now()
+            result = await connection.execute(query, todo.task, due_date, todo.completed, todo_id)
+        return {"message": "Todo updated"}
     except Exception as e:
         print(f"Error updating todo: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.delete("/todos/{todo_id}")
 async def delete_todo(todo_id: int):
-    query = """DELETE FROM todos WHERE id = $1"""
+    query = "DELETE FROM todos WHERE id = $1"
     try:
         async with app.state.pool.acquire() as connection:
             await connection.execute(query, todo_id)
-            return {"message": "Todo deleted successfully"}
+        return {"message": "Todo deleted"}
     except Exception as e:
         print(f"Error deleting todo: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")

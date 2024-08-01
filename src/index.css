@@ -109,3 +109,71 @@ body {
     padding: 20px;
   }
 }
+
+.todo-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.todo-form {
+  flex: 1;
+  max-width: 300px;
+  margin-right: 20px;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.todo-form label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.todo-form input[type="text"],
+.todo-form input[type="datetime-local"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.todo-form input[type="checkbox"] {
+  margin-left: 5px;
+}
+
+.todo-list {
+  flex: 2;
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.task.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.actions button:hover {
+  color: #007bff;
+}
