@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const TodoApp = () => {
+function App() {
   const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newDueDate, setNewDueDate] = useState("");
@@ -13,23 +13,23 @@ const TodoApp = () => {
   }, []);
 
   const fetchTodos = async () => {
-    const response = await axios.get("http://localhost:8000/todos");
-    setTodos(response.data);
+    try {
+      const response = await axios.get("http://localhost:8000/todos");
+      setTodos(response.data);
+    } catch (error) {
+      console.error("Error fetching todos:", error);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newTodo = {
-      task: newTitle,
-      due_date: newDueDate || new Date().toISOString(),
-      completed: isDone,
-    };
 
     if (editId) {
-      await axios.put(`http://localhost:8000/todos/${editId}`, newTodo);
+      await updateTodo(editId);
     } else {
-      await axios.post("http://localhost:8000/todos", newTodo);
+      await addTodo();
     }
+
     setNewTitle("");
     setNewDueDate("");
     setIsDone(false);
@@ -37,16 +37,44 @@ const TodoApp = () => {
     fetchTodos();
   };
 
+  const addTodo = async () => {
+    try {
+      await axios.post("http://localhost:8000/todos", {
+        task: newTitle,
+        due_date: newDueDate || new Date().toISOString(),
+        completed: isDone,
+      });
+    } catch (error) {
+      console.error("Error adding todo:", error);
+    }
+  };
+
+  const updateTodo = async (id) => {
+    try {
+      await axios.put(`http://localhost:8000/todos/${id}`, {
+        task: newTitle,
+        due_date: newDueDate || new Date().toISOString(),
+        completed: isDone,
+      });
+    } catch (error) {
+      console.error("Error updating todo:", error);
+    }
+  };
+
   const handleEdit = (todo) => {
     setNewTitle(todo.task);
-    setNewDueDate(todo.due_date);
+    setNewDueDate(todo.created);
     setIsDone(todo.completed);
     setEditId(todo.id);
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:8000/todos/${id}`);
-    fetchTodos();
+    try {
+      await axios.delete(`http://localhost:8000/todos/${id}`);
+      fetchTodos();
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+    }
   };
 
   return (
@@ -84,17 +112,18 @@ const TodoApp = () => {
         {todos.map((todo) => (
           <div key={todo.id} className="todo-item">
             <span className={`task ${todo.completed ? "completed" : ""}`}>
-              {todo.task} (Due: {new Date(todo.due_date).toLocaleString()})
+              {todo.task} (Created: {new Date(todo.created).toLocaleString()})
             </span>
             <div className="actions">
-              <button onClick={() => handleEdit(todo)}>✏️ Edit</button>
-              <button onClick={() => handleDelete(todo)}>❌ Delete</button>
+              <button onClick={() => handleEdit(todo)}>✏️</button>
+              <button onClick={() => handleDelete(todo.id)}>🗑️</button>
             </div>
           </div>
+          
         ))}
       </div>
     </div>
   );
-};
+}
 
-export default TodoApp;
+export default App;
