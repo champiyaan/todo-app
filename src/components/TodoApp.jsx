@@ -14,7 +14,9 @@ function App() {
 
   const fetchTodos = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/todos");
+      const response = await axios.get(
+        "https://todo-app-kappa-ashen.vercel.app/todos"
+      );
       setTodos(response.data);
     } catch (error) {
       console.error("Error fetching todos:", error);
@@ -105,7 +107,9 @@ function App() {
             onChange={(e) => setIsDone(e.target.checked)}
           />
         </div>
-        <button type="submit" className="addTodoButton">{editId ? "Update" : "Add"} Todo</button>
+        <button type="submit" className="addTodoButton">
+          {editId ? "Update" : "Add"} Todo
+        </button>
       </form>
 
       <div className="todo-list">
@@ -119,7 +123,6 @@ function App() {
               <button onClick={() => handleDelete(todo.id)}>🗑️</button>
             </div>
           </div>
-          
         ))}
       </div>
     </div>

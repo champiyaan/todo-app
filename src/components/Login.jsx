@@ -14,10 +14,13 @@ const Login = () => {
     e.preventDefault();
     setLoading(true); // Start loading
     try {
-      const response = await axios.post("http://localhost:8000/login", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "https://todo-app-kappa-ashen.vercel.app/login",
+        {
+          username,
+          password,
+        }
+      );
       console.log(response.data);
       setError(""); // Clear error on successful login
       navigate("/todo"); // Redirect to the Todo app on successful login
