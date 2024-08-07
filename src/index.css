@@ -1,4 +1,3 @@
-/* General body styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f0f0f0;
@@ -9,7 +8,6 @@ body {
   margin: 0;
 }
 
-/* Center the login container */
 .login-container {
   width: 320px;
   padding: 25px;
@@ -21,7 +19,6 @@ body {
   box-sizing: border-box;
 }
 
-/* Position the Login heading at the top-left of the container */
 .login-container h2 {
   margin: 0;
   font-size: 20px;
@@ -29,7 +26,6 @@ body {
   margin-bottom: 15px;
 }
 
-/* Style the input fields */
 .login-container input[type="text"],
 .login-container input[type="password"] {
   width: 100%;
@@ -41,14 +37,12 @@ body {
   transition: border-color 0.3s ease-in-out;
 }
 
-/* Focus state for inputs */
 .login-container input[type="text"]:focus,
 .login-container input[type="password"]:focus {
   border-color: green;
   outline: none;
 }
 
-/* Style the submit button */
 .login-container button {
   width: 100%;
   padding: 12px;
@@ -62,7 +56,6 @@ body {
   transition: background-color 0.3s ease-in-out, transform 0.2s;
 }
 
-/* Hover and active effects for the button */
 .login-container button:hover {
   background-color: rgb(52, 141, 52);
   transform: translateY(-2px);
@@ -72,17 +65,15 @@ body {
   background-color: #003f7f;
 }
 
-/* Style the error message */
 .login-container p {
   color: red;
   font-size: 14px;
   margin: 5px 0;
 }
 
-/* Loader styling */
 .loader {
-  border: 4px solid #f3f3f3; /* Light grey */
-  border-top: 4px solid #2d642b; /* Blue */
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #2d642b;
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -92,7 +83,6 @@ body {
   margin-left: 10px;
 }
 
-/* Animation for the loader */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -102,7 +92,6 @@ body {
   }
 }
 
-/* Responsive adjustments */
 @media (max-width: 400px) {
   .login-container {
     width: 90%;
@@ -119,9 +108,9 @@ body {
 
 .todo-form {
   flex: 1;
-  max-width: 300px;
+  max-width: 1000px;
   margin-right: 20px;
-  background-color: #f9f9f9;
+  background-color: #975f5f7a;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -136,6 +125,8 @@ body {
 .todo-form input[type="datetime-local"] {
   width: 100%;
   padding: 8px;
+
+  margin-right: 25px;
   margin-bottom: 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -172,8 +163,30 @@ body {
   border: none;
   cursor: pointer;
   font-size: 16px;
+  display: flex;
 }
 
 .actions button:hover {
   color: #007bff;
+}
+
+.addTodoButton {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Smooth transition effects */
+  text-align: center;
+}
+
+.addTodoButton:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+  color: #fff;
+  transform: translateY(-2px);
 }

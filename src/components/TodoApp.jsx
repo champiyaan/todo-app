@@ -105,7 +105,7 @@ function App() {
             onChange={(e) => setIsDone(e.target.checked)}
           />
         </div>
-        <button type="submit">{editId ? "Update" : "Add"} Todo</button>
+        <button type="submit" className="addTodoButton">{editId ? "Update" : "Add"} Todo</button>
       </form>
 
       <div className="todo-list">

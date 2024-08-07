@@ -6,11 +6,11 @@ import asyncpg
 import os
 from datetime import datetime
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv() 
 
 app = FastAPI()
 
-# Allow all origins (you can specify particular origins if needed)
+
 origins = ["*"]
 
 app.add_middleware(
@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Database connection details from environment variable
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 class User(BaseModel):
